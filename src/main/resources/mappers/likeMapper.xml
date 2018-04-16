@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kosmo.mapper.LikeMapper">
+
+	<select id="getLikeUsers" resultType="LikeVO">
+	<!-- SELECT * FROM op_like WHERE user_id = #{user_id} AND (board_srl > 1 AND board_srl < 20) -->
+		<![CDATA[  
+		SELECT * FROM op_like WHERE  board_srl = #{board_srl}
+		  ]]>
+	</select>
+	
+	<select id="getLikeUserCount" resultType="Integer">
+		<![CDATA[  
+		SELECT count(*) FROM op_like WHERE board_srl=#{board_srl}
+		  ]]>
+	</select>
+
+
+
+</mapper>
