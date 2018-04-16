@@ -75,7 +75,9 @@
 			<mapping path="/admin**/**"/>
 			
 			<!-- 게시판 -->
-			<!-- <mapping path="/board/client*"/> -->
+			<mapping path="/board/service/new"/>
+			<mapping path="/board/service/**/edit"/>
+			
 			
 			<!-- 회원 관련.. -->
 			<mapping path="/member/withdraw"/>
@@ -84,6 +86,9 @@
 			<mapping path="/member/myinfo"/>
 			
 			<!-- 공지사항,FAQ -->
+			<mapping path="/customercenter/notice/**/edit"/>
+			<mapping path="/customercenter/notice/new"/>
+			
 			<mapping path="/customercenter/faq/**/edit"/>
 			<mapping path="/customercenter/faq/new"/>
 			
