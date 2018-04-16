@@ -4,6 +4,12 @@
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
+<!-- 자동 CamelCase 변환 -->
+ <!--  
+ <settings> 
+    <setting name="mapUnderscoreToCamelCase" value="true"/>
+ </settings> 
+  -->
   <typeAliases>
     <package name="com.cafe24.ourplanners.member.domain"/>
     <package name="com.cafe24.ourplanners.board.domain"/>
@@ -11,11 +17,12 @@
     <package name="com.cafe24.ourplanners.notice.domain"/>
     <package name="com.cafe24.ourplanners.comment.domain"/>
     <package name="com.cafe24.ourplanners.message.domain"/>
+    <package name="com.cafe24.ourplanners.like.domain"/>
+    <package name="com.cafe24.ourplanners.document.domain"/>
     
     <package name="com.cafe24.ourplanners.member.dto"/>
     <package name="com.cafe24.ourplanners.board.dto"/>
   </typeAliases>
-
 
 </configuration>
 
