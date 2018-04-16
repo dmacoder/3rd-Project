@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cafe24.ourplanners.mapper.DocumentMapper">
+
+
+	<sql id="search">
+		<choose>
+			<when test="searchType == null or searchType == '' or keyword == null or keyword == ''">
+
+			</when>
+			<otherwise>
+				<if test="searchType == 't'.toString()">
+					and title like CONCAT(CONCAT('%', #{keyword,jdbcType=VARCHAR}), '%')
+				</if>
+				<if test="searchType == 'c'.toString()">
+					 and contents like CONCAT(CONCAT('%', #{keyword,jdbcType=VARCHAR}), '%')
+					
+				<!-- and long_search(#{keyword,jdbcType=VARCHAR}) > 0 -->
+					
+				</if>
+				<if test="searchType == 'i'.toString()">
+					and user_id like CONCAT(CONCAT('%', #{keyword,jdbcType=VARCHAR}), '%')
+				</if>
+				<if test="searchType == 'tc'.toString()">
+					and ( title like CONCAT(CONCAT('%', #{keyword,jdbcType=VARCHAR}), '%') OR contents like
+					CONCAT(CONCAT('%', #{keyword,jdbcType=VARCHAR}), '%'))
+					
+					<!-- and ( (title like CONCAT(CONCAT('%', #{keyword,jdbcType=VARCHAR}), '%')) OR (long_search(#{keyword,jdbcType=VARCHAR}) > 0)) -->
+				</if>
+			</otherwise>
+		</choose>
+	</sql>	
+	
+	<sql id="field">
+	
+	<if test="fieldPropNames != null">
+       <foreach item="fieldPropName" index="index" collection="fieldPropNames"  separator=",">
+       	#{fieldPropName}
+       </foreach>
+    </if>
+    
+	</sql>
+	
+	<!-- 
+	Map<String,Object> map = new HashMap<String,Object>();
+	List<String> propNamesList = new ArrayList<String>();
+	List<String> propValuesList = new ArrayList<String>();
+	propNamesList.add(0, "parent");
+	propNamesList.add(1, "step");
+	
+	propValuesList.add(0, "desc");
+	propValuesList.add(1, "asc");
+	
+	map.put("sortPropNames",propNamesList);
+	map.put("sortPropValues",propValuesList);
+	 -->
+	<sql id="sort">
+	
+	<if test="sortPropNames != null ">
+       order by 
+       <foreach item="sortPropName" index="index" collection="sortPropNames" separator=",">
+        #{sortPropName} #{sortPropValues[${index}]}
+       </foreach>
+    </if>
+
+	</sql>
+	
+
+	
+	<select id="getTotalRecordCount" resultType="Integer">
+	
+	<![CDATA[  
+		select count(*) from op_document
+		  where document_srl > 0 
+	]]>
+	
+	<include refid="search"></include>
+	
+	</select>
+	
+	<select id="getDocumentListJson" resultType="DocumentVO">
+	select * from ( select Tb.*, rownum rNum from (select * from op_document where document_srl > 0 
+	
+	<include refid="search"></include>
+	
+	order by parent desc, step asc) Tb )
+	
+	where rNum between #{pageStart} and #{pageEnd}
+	
+	</select>
+	
+	<select id="readDocument" resultType="DocumentVO">
+	select * from where document_srl = #{document_srl}	
+	</select>
+	
+	<insert id="insertDocument">
+		insert into op_document(document_srl,user_id,title,contents,postdate,parent,step,indent) values(op_document_srl_seq.nextval,#{user_id},#{title},#{contents},sysdate,op_document_srl_seq.currval,0,0);
+		
+		<selectKey keyProperty="document_srl" resultType="Integer" order="AFTER">
+			SELECT op_document_srl_seq.currval FROM dual
+		</selectKey> 		
+	</insert>
+
+	<insert id="insertReDocument">
+		insert into op_document(document_srl,user_id,title,contents,postdate,parent,step,indent) values(op_document_srl_seq.nextval,#{user_id},#{title},#{contents},sysdate,#{parent},#{step},#{indent});
+		
+		<selectKey keyProperty="document_srl" resultType="Integer" order="AFTER">
+			SELECT op_document_srl_seq.currval FROM dual
+		</selectKey> 
+	</insert>
+	
+	<update id="updateStep">
+	<![CDATA[
+	update op_document set step=step+1 where parent=#{parent} and step > #{step}
+	]]>	
+	</update>
+	
+	<update id="modifyDocument">
+		update op_document set title=#{title}, contents=#{contents} where document_srl=#{document_srl}
+		<selectKey keyProperty="document_srl" resultType="Integer" order="AFTER">
+			SELECT document_srl FROM op_document where document_srl = #{document_srl}
+		</selectKey>	
+	</update>
+	
+	<delete id="deleteDocument">
+	delete from op_document where document_srl = #{document_srl}
+	</delete>
+	
+	<delete id="deleteAllDocument">
+	delete from op_document where 1=1
+	</delete>
+	
+
+</mapper>
