@@ -1,7 +1,19 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<jsp:useBean id="today" class="java.util.Date" scope="page" />
+<style>
+.like {
+	border: 0;
+	background: none;
+	outline: none;
+}
+
+.like.active {
+	color: red;
+}
+</style>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/view.css?ver=<fmt:formatDate value="${today}" pattern="yyyyMMddHHmmss" />">
 <script type="text/javascript" charset="utf-8">
 	sessionStorage.setItem("contextpath", "${pageContext.request.contextPath}");
@@ -332,86 +344,131 @@ function getListComment(nowPage, parent_board_srl, comment_type) {
 
 
 </script>
-	<!-- Body영역 -->
-	<div class="row" id="row-body-view">
+
+<script type="text/javascript">
+function toggleWish(board_srl){
 	
-			<!-- 뷰 머리 -->
-			<div class="view-head">
-				<p class="p-title">시공사례 대표이미지</p>
-				<!-- <img class="img-responsive" src="../images/tile4.jpg"
+	var write_user_id = '<c:out value="${view.user_id}"/>';
+	var login_user_id = '<c:out value="${loginUserInfo.user_id}"/>';
+	var per_id = $("input[name='"+like_srl+"_per_id']").val();
+	var formData = {"board_srl":board_srl};
+	var selector = "."+like_srl;
+	
+	var active = $(cla).hasClass("active");
+	if(active){
+		$.ajax({
+			type : "POST",
+			url : "delLike",
+			cache : false,
+			data : formData,
+			success : function() {
+				$(selector).removeClass("active");
+			},
+			error : function(){
+				alert("위시리스트 실패하였습니다.");
+			}
+		});
+	}else{
+		$.ajax({
+			type : "POST",
+			url : "addLike",
+			cache : false,
+			data : formData,
+			success : function() {
+				$(selector).addClass("active");
+			},
+			error : function(){
+				alert("위시리스트 실패하였습니다.");
+			}
+		});
+	}
+}
+</script>
+<!-- Body영역 -->
+<div class="row text-left" id="row-body-view">
+
+	<!-- 뷰 머리 -->
+	<div class="view-head">
+		<p class="p-title">시공사례 대표이미지</p>
+		<!-- <img class="img-responsive" src="../images/tile4.jpg"
 					style="height: 500px; width: 100%;" /> <br /> -->
-				<div class="title">
-					<p class="p-title">제목</p>
-					<h4>${view.title }</h4>
-				</div>
-			</div>
-			<!-- 뷰 별평가 -->
-			<!-- <div class="view-star">
+		<div class="title">
+			<p class="p-title">제목</p>
+			<h4>${view.title }</h4>
+		</div>
+	</div>
+	<!-- 뷰 별평가 -->
+	<!-- <div class="view-star">
 				<img src="../images/star.png" /> <img src="../images/star.png" />
 				<img src="../images/star.png" /> <img src="../images/star.png" />
 				<img src="../images/star.png" />
 				<p>15개의 평가</p>
 			</div> -->
-			<!-- 뷰 상세내용 -->
-			<div class="view-body">
-				<div class="contents">
-					<p class="p-title">서비스내용</p>
-					<div class="textarea">
-						${view.contents }
-					</div>
-				</div>
-				<div class="need-contents">
-					<p class="p-title">필수사항</p>
-					<div class="form-inline">
-						<p>서비스지역 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp; ${view.location }
-						</p>
-						<p>서비스기간 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;
-							${view.service_time_start } ~ ${view.service_time_end }</p>
-						<p>서비스비용 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;
-							<fmt:formatNumber value="${view.service_cost }"/>원</p>
-						<p>연락가능시간 &nbsp;&nbsp;: &nbsp;&nbsp; ${view.contact_time_start } ~ ${view.contact_time_end }</p>
-					</div>
-				</div>
-				<div class="images">
-					<p class="p-title">시공사례 이미지</p>
-					<!-- <img class="img-responsive" src="../images/tile1.jpg" /><br /> <img
+	<!-- 뷰 상세내용 -->
+	<div class="view-body">
+		<div class="contents">
+			<p class="p-title">서비스내용</p>
+			<div class="textarea">${view.contents }</div>
+		</div>
+		<div class="need-contents">
+			<p class="p-title">필수사항</p>
+			<div class="form-inline">
+				<p>서비스지역 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp; ${view.location }</p>
+				<p>서비스기간 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp; ${view.service_time_start } ~ ${view.service_time_end }</p>
+				<p>
+					서비스비용 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: &nbsp;&nbsp;&nbsp;
+					<fmt:formatNumber value="${view.service_cost }" />
+					원
+				</p>
+				<p>연락가능시간 &nbsp;&nbsp;: &nbsp;&nbsp; ${view.contact_time_start } ~ ${view.contact_time_end }</p>
+			</div>
+		</div>
+		<div class="images">
+			<p class="p-title">시공사례 이미지</p>
+			<!-- <img class="img-responsive" src="../images/tile1.jpg" /><br /> <img
 						class="img-responsive" src="../images/tile2.jpg" /><br /> <img
 						class="img-responsive" src="../images/tile3.jpg" /><br /> -->
-				</div>
-			</div>
+		</div>
 
-			<!-- 뷰페이지 버튼부분 -->
-			<div class="view-btn">
+		<div class="extra content">
+			<input type="hidden" name="${like.like_srl}_per_id" value="${like.per_id }"> 
 			
-			<c:if test="${loginUserInfo.user_id eq view.user_id || loginUserInfo.is_admin =='Y'}">
-				
-				<button type="button" class="btn btn-info" id="btn-modify" 
-					name="modifyBtn" onclick="javascript:modifyBoard(${view.board_srl});">수정하기</button>
-				
-				<button type="button" class="btn btn-danger" id="btn-delete"
-					
-					onclick="javascript:deleteBoard(${view.board_srl});">삭제하기</button>
-			</c:if>
-				
-				<button type="button" class="btn btn-success" id="boardListBtn">목록보기</button>
-			</div>
+			<span class="right floated">
+			<i class="glyphicon glyphicon-heart like active" onclick="toggleWish(${view.board_srl})"></i>좋아요</span>
+		</div>
 
 
-			<!-- 요청&댓글부분 -->
-			
-			<div class="view-comment-head">
-				<div class="container">
-					<ul class="nav nav-tabs" id="nav-tabs">
-						<li class="active"><a data-toggle="tab" href="#home" onclick="getListComment(1, ${view.board_srl}, 'R');">채택요청</a></li>
-						<li><a data-toggle="tab" href="#menu1" onclick="getListComment(1, ${view.board_srl}, 'C');">댓글후기</a></li>
-					</ul>
-					<div class="tab-content">
-						<!-- 요청리스트부분 -->
-						<div id="home" class="tab-pane fade in active">
-							<div class="write-comment">
-								
-								<div id="commentListR">
-									<%-- <div class="table-responsive">
+	</div>
+
+	<!-- 뷰페이지 버튼부분 -->
+	<div class="view-btn">
+
+		<c:if test="${loginUserInfo.user_id eq view.user_id || loginUserInfo.is_admin =='Y'}">
+
+			<button type="button" class="btn btn-info" id="btn-modify" name="modifyBtn" onclick="javascript:modifyBoard(${view.board_srl});">수정하기</button>
+
+			<button type="button" class="btn btn-danger" id="btn-delete" onclick="javascript:deleteBoard(${view.board_srl});">삭제하기</button>
+		</c:if>
+
+		<button type="button" class="btn btn-success" id="boardListBtn">목록보기</button>
+	</div>
+
+
+	<!-- 요청&댓글부분 -->
+
+	<div class="view-comment-head">
+		<div class="container">
+			<ul class="nav nav-tabs" id="nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#home" onclick="getListComment(1, ${view.board_srl}, 'R');">채택요청</a></li>
+				<li><a data-toggle="tab" href="#menu1" onclick="getListComment(1, ${view.board_srl}, 'C');">댓글후기</a></li>
+			</ul>
+			<div class="tab-content">
+				<!-- 요청리스트부분 -->
+				<div id="home" class="tab-pane fade in active">
+					<div class="write-comment">
+
+						<div id="commentListR">
+							<%-- <div class="table-responsive">
 										<table class="table table-hover" id="table-hover">
 											<thead>
 												<tr class="success">
@@ -433,8 +490,8 @@ function getListComment(nowPage, parent_board_srl, comment_type) {
 											</tbody>
 										</table>
 									</div> --%>
-								</div>
-								<!-- <div class="container-fluid" align="center">
+						</div>
+						<!-- <div class="container-fluid" align="center">
 									<div class="pagination">
 										<ul class="pagination pagination" id="pagination-ul">
 											<li><a href="#"><span
@@ -453,27 +510,25 @@ function getListComment(nowPage, parent_board_srl, comment_type) {
 										</ul>
 									</div>
 								</div> -->
-								<div class="view-comment-write">
-									<form id="requestCommentsForm">
-									<input type="hidden" name="parent_board_srl" id="parent_board_srl_R" value="${view.board_srl}" />
-									<input type="hidden" name="user_id" value="${loginUserInfo.user_id}" />
-									<input type="hidden" name="comment_type" value="R" />
-									<div class="form-inline">
-										
-										
-										<textarea class="form-control" placeholder="채택요청을 입력하세요" id="requestText" name="comments"></textarea>
-										<button type="button" class="btn btn-info" id="requestSubmit">채택요청</button>
-									</div>
-									</form>
+						<div class="view-comment-write">
+							<form id="requestCommentsForm">
+								<input type="hidden" name="parent_board_srl" id="parent_board_srl_R" value="${view.board_srl}" /> <input type="hidden" name="user_id" value="${loginUserInfo.user_id}" /> <input type="hidden" name="comment_type" value="R" />
+								<div class="form-inline">
+
+
+									<textarea class="form-control" placeholder="채택요청을 입력하세요" id="requestText" name="comments"></textarea>
+									<button type="button" class="btn btn-info" id="requestSubmit">채택요청</button>
 								</div>
-							</div>
+							</form>
 						</div>
-						<!-- 댓글후기 리스트 -->
-						<div id="menu1" class="tab-pane fade">
-							<div class="write-comment">
-							<div id="commentListC">
-								<div class="table-responsive">
-									<!-- <table class="table table-hover" id="table-hover">
+					</div>
+				</div>
+				<!-- 댓글후기 리스트 -->
+				<div id="menu1" class="tab-pane fade">
+					<div class="write-comment">
+						<div id="commentListC">
+							<div class="table-responsive">
+								<!-- <table class="table table-hover" id="table-hover">
 										<thead>
 											<tr class="info">
 												<th>아이디</th>
@@ -493,9 +548,9 @@ function getListComment(nowPage, parent_board_srl, comment_type) {
 
 										</tbody>
 									</table> -->
-								</div>
-								</div>
-								<!-- <div class="container-fluid" align="center">
+							</div>
+						</div>
+						<!-- <div class="container-fluid" align="center">
 									<div class="pagination">
 										<ul class="pagination pagination" id="pagination-ul">
 											<li><a href="#"><span
@@ -514,25 +569,23 @@ function getListComment(nowPage, parent_board_srl, comment_type) {
 										</ul>
 									</div>
 								</div> -->
-								<div class="view-comment-write">
-								<form id="commentCommentsForm">
-									<input type="hidden" name="parent_board_srl" id="parent_board_srl_C" value="${view.board_srl}" />
-									<input type="hidden" name="user_id" value="${loginUserInfo.user_id}" />
-									<input type="hidden" name="comment_type" value="C" />
-									<div class="form-inline">									
-										<textarea class="form-control" placeholder="후기를 등록하세요" id="commentText" name="comments"></textarea>
-										<button type="button" class="btn btn-success" id="commentSubmit">후기등록</button>
-									</div>
-									<div class="form-inline">
-									<div>서비스평가 점수 5점 만점</div>
-										<input type="number" name="service_score" min="0" max="5" step="1" value="5">
-									</div>
-								</form>
+						<div class="view-comment-write">
+							<form id="commentCommentsForm">
+								<input type="hidden" name="parent_board_srl" id="parent_board_srl_C" value="${view.board_srl}" /> <input type="hidden" name="user_id" value="${loginUserInfo.user_id}" /> <input type="hidden" name="comment_type" value="C" />
+								<div class="form-inline">
+									<textarea class="form-control" placeholder="후기를 등록하세요" id="commentText" name="comments"></textarea>
+									<button type="button" class="btn btn-success" id="commentSubmit">후기등록</button>
 								</div>
-							</div>
+								<div class="form-inline">
+									<div>서비스평가 점수 5점 만점</div>
+									<input type="number" name="service_score" min="0" max="5" step="1" value="5">
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
 			</div>
-		
+		</div>
 	</div>
+
+</div>
