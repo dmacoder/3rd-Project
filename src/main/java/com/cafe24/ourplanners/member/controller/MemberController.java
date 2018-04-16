@@ -37,7 +37,7 @@ import com.cafe24.ourplanners.util.UploadFileUtils;
 @Controller
 public class MemberController {
 
-	private static final Logger logger = LoggerFactory.getLogger(MainController.class);
+	private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
 	@Inject
 	private MemberService service;
 
