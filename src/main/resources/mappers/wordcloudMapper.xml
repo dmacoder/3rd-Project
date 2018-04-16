@@ -13,6 +13,18 @@
 	
 	
 	</insert>
+	
+	<update id="mergeWordCloud">
+	
+	merge into op_wordcloud w using dual d on (ip_address = #{ip_address} and searchword=#{searchword,jdbcType=VARCHAR} and category_srl = #{category_srl,jdbcType=INTEGER} and subcategory_srl=#{subcategory_srl,jdbcType=INTEGER} and board_type = #{board_type,jdbcType=VARCHAR})  
+								when matched then  
+								    update set searchdate=sysdate
+								when not matched then
+								    insert (wordcloud_srl, searchword, searchdate, category_srl, subcategory_srl,board_type,ip_address)  values (wordcloud_srl_seq.nextval, #{searchword,jdbcType=VARCHAR}, sysdate, #{category_srl,jdbcType=INTEGER}, #{subcategory_srl,jdbcType=INTEGER},#{board_type,jdbcType=VARCHAR},#{ip_address,jdbcType=VARCHAR})
+		
+	</update>
+	
+	
  	
  	<!-- 탑20 워드 클라우드 (1주일내 핫 검색어 20개) 가져오기 -->	
  	<select id="getHotWordCloud" resultType="com.cafe24.ourplanners.board.domain.WordCloudVO">
