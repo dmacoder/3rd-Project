@@ -1007,7 +1007,7 @@ Website: http://abusinesstheme.com
 /* *********************	Preloader	********************* */
 
 
-	$win.load(function(){
+	$(window).load(function(){
 
 		if ($("#preloader").length) {
 
