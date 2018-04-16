@@ -51,7 +51,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	
-	initSideNav("${category_srl}");
+	initSideNav("${category_srl}","${subcategory_srl}");
 	
 	getTagsList("${category_srl}", "${subcategory_srl}");
 	
@@ -521,7 +521,7 @@ function keyExists(key, search) {
     return key in search;
 }
 
-function initSideNav(category_srl) {
+function initSideNav(category_srl,subcategory_srl) {
 
 	category_srl = typeof category_srl !== 'undefined' ? category_srl : "";
 
@@ -530,6 +530,13 @@ function initSideNav(category_srl) {
 		category_srl = "";
 	}
 
+	subcategory_srl = typeof subcategory_srl !== 'undefined' ? subcategory_srl : "";
+
+	if (isEmpty(subcategory_srl)) {
+
+		subcategory_srl = "";
+	}
+	
 	$('#CategoryTitle').empty();
 	$('#subCategoryList').empty();
 
@@ -564,6 +571,9 @@ function initSideNav(category_srl) {
 					
 				}else{
 					count++;
+					if(!isEmpty(subcategory_srl) && categoryVO.subcategory_srl==subcategory_srl)
+					inHTML += "<li class=\"active\"><a href=\"javascript:selectSubCategory(" + categoryVO.category_srl + "," + categoryVO.subcategory_srl + ")\"><span>" + count + "</span>" + categoryVO.subcategory_name + "</a></li>";
+					else
 					inHTML += "<li><a href=\"javascript:selectSubCategory(" + categoryVO.category_srl + "," + categoryVO.subcategory_srl + ")\"><span>" + count + "</span>" + categoryVO.subcategory_name + "</a></li>";
 					inHTMLCategoryName = categoryVO.category_name+" 서브 카테고리";
 				}
@@ -736,7 +746,7 @@ function getServiceSearchList(nowPage, category_srl, subcategory_srl , board_typ
 		$('#allplanners-btn').addClass('btn-info');	
 	}
 	
-	initSideNav(category_srl);
+	initSideNav(category_srl, subcategory_srl);
 	
 	getTagsList(category_srl, subcategory_srl);
 	

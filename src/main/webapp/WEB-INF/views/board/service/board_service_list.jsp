@@ -189,6 +189,20 @@
 	function selectSubCategory(category_srl, subcategory_srl) {
 
 		getServiceSearchList(1, category_srl, subcategory_srl);
+
+		
+		//서브 카테고리가 비어있지 않으면 서브 카테 고리 번호를 저장하고 해당 번호를 active 클래스를 주어 선택된것으로 한다
+
+		/* $("aside.sidebar ul li").each(function(index) {
+			alert("서브 : " + subcategory_srl+"index :"+(index+1));
+			$(this).removeClass("active");
+			if(eval(index+1)==subcategory_srl)
+			{
+				alert("같다");
+				$(this).addClass("active");
+			}
+		}); */
+
 	}
 
 	function keyExists(key, search) {
@@ -203,13 +217,20 @@
 		return key in search;
 	}
 
-	function initSideNav(category_srl) {
+	function initSideNav(category_srl,subcategory_srl) {
 
 		category_srl = typeof category_srl !== 'undefined' ? category_srl : "";
 
 		if (isEmpty(category_srl)) {
 
 			category_srl = "";
+		}
+		
+		subcategory_srl = typeof subcategory_srl !== 'undefined' ? subcategory_srl : "";
+
+		if (isEmpty(subcategory_srl)) {
+
+			subcategory_srl = "";
 		}
 
 		$('#CategoryTitle').empty();
@@ -239,6 +260,7 @@
 					if (isEmpty(category_srl)) {
 						if (!keyExists(categoryVO.category_name, items)) {
 							count++;
+							
 							inHTML += "<li><a href=\"javascript:selectCategory(" + categoryVO.category_srl + ")\"><span>" + count + "</span>" + categoryVO.category_name + "</a></li>";
 							items.push(categoryVO.category_name);
 							inHTMLCategoryName = categoryVO.category_name;
@@ -246,6 +268,9 @@
 
 					} else {
 						count++;
+						if(!isEmpty(subcategory_srl) && categoryVO.subcategory_srl==subcategory_srl)
+						inHTML += "<li class=\"active\"><a href=\"javascript:selectSubCategory(" + categoryVO.category_srl + "," + categoryVO.subcategory_srl + ")\"><span>" + count + "</span>" + categoryVO.subcategory_name + "</a></li>";
+						else
 						inHTML += "<li><a href=\"javascript:selectSubCategory(" + categoryVO.category_srl + "," + categoryVO.subcategory_srl + ")\"><span>" + count + "</span>" + categoryVO.subcategory_name + "</a></li>";
 						inHTMLCategoryName = categoryVO.category_name + " 서브 카테고리";
 					}
@@ -402,12 +427,12 @@
 			$('#allplanners-btn').addClass('btn-info');
 		}
 
-		initSideNav(category_srl);
+		initSideNav(category_srl,subcategory_srl);
 
 		getTagsList(category_srl, subcategory_srl);
 
-		if (!isEmpty(category_srl)||!isEmpty(subcategory_srl))
-		$("#cateTitle").html(setCategoryTitle(category_srl, subcategory_srl));
+		if (!isEmpty(category_srl) || !isEmpty(subcategory_srl))
+			$("#cateTitle").html(setCategoryTitle(category_srl, subcategory_srl));
 
 		var url = "${pageContext.request.contextPath}/board/json/service_list.json";
 		var serviceMainImgPath = "${pageContext.request.contextPath}/resources/upload/service/";
@@ -420,6 +445,7 @@
 		//alert(params);
 
 		$.ajax({
+			async : false,
 			cache : false, // 캐시 사용 없애기
 			type : 'post',
 			url : url,
@@ -553,31 +579,29 @@
 				//alert(JSON.stringify(data));
 				$.each(data.subCategoryList, function(index, categoryVO) { // each로 모든 데이터 가져와서 items 배열에 넣고
 
-					
-				
-					
-					
 					if (isEmpty(subcategory_srl)) {
-						
+
 						categoryVO.category_name = categoryVO.category_name + " 인기 검색어 목록";
-						
+
 						if (categoryVO.category_srl == 1)
 							returnLabel += "<h2 class=\"category label label-default text-danger\">" + categoryVO.category_name + "</h2>";
 						else if (categoryVO.category_srl == 2)
 							returnLabel += "<h2 class=\"category label label-primary text-danger\">" + categoryVO.category_name + "</h2>";
 						else if (categoryVO.category_srl == 3)
-							returnLabel += "<h2 class=\"category label label-success text-danger\">" + categoryVO.category_name  + "</h2>";
+							returnLabel += "<h2 class=\"category label label-success text-danger\">" + categoryVO.category_name + "</h2>";
 						else if (categoryVO.category_srl == 4)
-							returnLabel += "<h2 class=\"category label label-info text-danger\">" + categoryVO.category_name  + "</h2>";
+							returnLabel += "<h2 class=\"category label label-info text-danger\">" + categoryVO.category_name + "</h2>";
 						else if (categoryVO.category_srl == 5)
 							returnLabel += "<h2 class=\"category label label-warning text-danger\">" + categoryVO.category_name + "</h2>";
 						else
-							returnLabel += "<h2 class=\"category label label-danger text-danger\">" + categoryVO.category_name  + "</h2>";
+							returnLabel += "<h2 class=\"category label label-danger text-danger\">" + categoryVO.category_name + "</h2>";
 
 					} else {
 
-						categoryVO.subcategory_name = categoryVO.subcategory_name + " 인기 검색어 목록";
 						
+
+						categoryVO.subcategory_name = categoryVO.subcategory_name + " 인기 검색어 목록";
+
 						if (categoryVO.category_srl == 1)
 							returnLabel += "<h2 class=\"category label label-default text-danger\">" + categoryVO.category_name + "-" + categoryVO.subcategory_name + "</h2>";
 						else if (categoryVO.category_srl == 2)
@@ -591,7 +615,7 @@
 						else
 							returnLabel += "<h2 class=\"category label label-danger text-danger\">" + categoryVO.category_name + "-" + categoryVO.subcategory_name + "</h2>";
 					}
-				
+
 					return false;
 
 				});//each끝
@@ -689,10 +713,11 @@
 							</div>
 							<div class="from-group col-xs-2" id="from-group">
 								<select name="searchType" class="form-control" id="select-form-control">
-									<option value="t">제목</option>
-									<option value="c">내용</option>
-									<option value="tc">제목+내용</option>
-									<option value="i">작성자(ID)</option>
+									<option value="n" <c:out value="${searchType == null ?'selected':''}"/>>검색 필터</option>
+									<option value="t" <c:out value="${searchType eq 't' ? 'selected':''}"/>>제목</option>
+									<option value="c" <c:out value="${searchType eq 'c' ? 'selected':''}"/>>내용</option>
+									<option value="tc" <c:out value="${searchType eq 'tc' ? 'selected':''}"/>>제목+내용</option>
+									<option value="i" <c:out value="${searchType eq 'i' ? 'selected':''}"/>>작성자(ID)</option>
 								</select>
 							</div>
 							<div class="input-group col-xs-4">
