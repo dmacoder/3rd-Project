@@ -16,10 +16,7 @@
 
 	<repositories>
 		<!-- ojdbc14 설정시 -->
-<!-- 		<repository>
-			<id>mesir-repo</id>
-			<url>http://mesir.googlecode.com/svn/trunk/mavenrepo</url>
-		</repository> -->
+		<!-- <repository> <id>mesir-repo</id> <url>http://mesir.googlecode.com/svn/trunk/mavenrepo</url> </repository> -->
 		<!-- ojdbc6 설정시 -->
 		<repository>
 			<id>codelds</id>
@@ -35,12 +32,7 @@
 			<version>11.2.0.3</version>
 		</dependency>
 
-		<!-- 
-		<dependency> 
-			<groupId>com.oracle</groupId> 
-			<artifactId>ojdbc6</artifactId> 
-			<version>12.1.0.1-atlassian-hosted</version> 
-		</dependency> -->
+		<!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc6</artifactId> <version>12.1.0.1-atlassian-hosted</version> </dependency> -->
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -82,7 +74,7 @@
 			<artifactId>log4jdbc-log4j2-jdbc4</artifactId>
 			<version>1.16</version>
 		</dependency>
-		
+
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -254,6 +246,13 @@
 			<version>4.4</version>
 		</dependency>
 
+		<!-- REST HATEOAS -->
+		<dependency>
+			<groupId>org.springframework.hateoas</groupId>
+			<artifactId>spring-hateoas</artifactId>
+			<version>0.15.0.RELEASE</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -276,8 +275,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<compilerArgument>-Xlint:all</compilerArgument>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
